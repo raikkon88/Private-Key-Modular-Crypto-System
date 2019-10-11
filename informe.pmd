@@ -97,7 +97,7 @@ plt.show()
 ```
 
 ```{python graphics6}
-plt.plot(seq30.keys(), seq5.values(), 'ro')
+plt.plot(seq30.keys(), seq30.values(), 'ro')
 plt.title("Agrupats per n = 5")
 plt.xlabel('Valors per n')
 plt.ylabel('Nombre de congruencies en Z/n per cada valor de n')
@@ -132,14 +132,16 @@ Per motius òbvis de temps s'ha restringit molt l'algoritme per simplificar-ne e
 
 ### Taula àurea. 
 
-Utilitant els 300 valors s'ha aconseguit una taula com la següent : 
+Utilitzant els 300 valors s'ha aconseguit una taula com la següent : 
 
 ![Primera part de la taula](./figures/c1.png)
 ![Primera part de la taula](./figures/c2.png)
 
 On a cada columna s'hi sitúa el caràcter al que correspon l'encriptació i el seu valor de congruència a Z/n com a capçalera, mentre que a les files hi trobem els valors dels nombres de la sèrie de fibonacci. A cada columna hi ha els que son congruents entre ells i amb el nombre de la capçalera. 
 
-### Algoritme d'encriptat
+### Algoritme de xifrat (Substitució)
+
+No segueix cap esquema dels algoritmes que hem vist a classe, ha sigut invenció de l'autor. 
 
 L'algoritme de codificació es pot trobar al fitxer auric.py. Es parteix d'un algoritme cíclic, començant per la posició [0,0] de la taula, es llegeix el primer caràcter que es vol encriptar (sempre que estigui a dins del rang d'acceptació, és a dir, que formi part de l'alfabet), es transforma el seu valor en el valor decimal de la taula ascci i s'avança per la taula en horitzontal tantes caselles com el valor del caràcter ens marca, és cíclic per tant la posició 25 és la posició [25 % L][25 // L] on L = 25. 
 
@@ -156,7 +158,7 @@ Per tant la sortida consta de :
 - text xifrat 
 - valor de la clau entre 0 i 299
 
-### Algoritme de desencriptat 
+### Algoritme de desxifrat (Substitució)
 
 Utiltizem la mateixa taula per que hem utilitzat per encriptar, ara per desencriptar. L'algoritme per desencriptar és més simple peró té una gràcia afegida que no tenen els altres, i és que per poder desencriptar cal que hi hagi la relació de congruència entre un nombre de fibonacci de la taula i caràcter que segueix al caràcter que estem mirant. 
 
@@ -178,11 +180,44 @@ donats :
 
 El valor del desxifrat serà el primer valor congruent dins de la primera sèrie de 25 valors a des de n-97 fins a n-97-25, tal que el valor de fibonacci sigui congruent amb la codificació numèrica del caràcter i+1 del text. (veure l'algoritme o cridar-me a tutories per més informació.).
 
+## Algoritme de xifrat (Transformació)
+
+Un cop s'ha aplicat l'algoritme de xifrat per subsitució s'aplica l'algoritme de xifrat railfence. 
+
+L'aplicació d'aquest algoritme és mitjançant la clau. s'utilitzen un nombre de rails variable entre 1 i |clau| % 25 + 1, per tant hi haurà entre 1 i 25 rails. S'ha optat per aquest sistema per integrar la clau al xifratge per transformació. S'ha volgut aplicar el 25 com a màxim nombre de rails degut a que ha sigut un nombe significant a la realització de la pràctica. El gran esforç en aquesta pràctica s'ha destinat a l'algoritme de substitució. 
+
+S'ha utilitzat el mateix algoritme que s'ha vist a classe a les transparències amb la variant que aquest algoritme no requereix alfabet i treballa sobre tots els caràcters. Aquest fet ens ajuda a amagar els caràcters que no es poden xifrar amb l'algoritme de substitució. 
+
+# Propietats de l'algoritme presentat
+
+- Si tens la taula, saps l'algoritme i coneixes la clau pots desxifrar el missatge. (assimila als algoritmes clàssics)
+- Es cerca homogeneitzar l'IC mitjançant la propietat de fibonacci % 25
+- S'utiltiza l'aritmètica modular per poder desxifrar els caràcters. 
+
+# Càlcul de l'IC. 
+
+Suposarem un text en anglés per a l'encriptat i el posterior anàlisi de l'Index de coincidència. El text proposat és el llibre de frankenstain que es pot trobar a la referència [1] o bé al directori txt sota el nom de frankenstain. 
+
+Després de codificar el text i desar-lo amb el nom de codificat.txt, obrim el fitxer que acabem de generar i filtrem tots els caràcters de l'alfabet fent un histograma de les aparicions. 
+
+```{python readbook}
+histograma = dict()
+book = ""
+with open("txt/codificat.txt", 'r', encoding='utf-8') as fileobj:
+    for line in fileobj:  
+        for ch in line: 
+            if ch >= 'a' and ch <= 'z': 
+                if ch in histograma:
+                    histograma[ch] += 1
+                else: 
+                    histograma[ch] = 1
+
+plt.plot(histograma.keys(), histograma.values(), 'ro')
+plt.title("Histograma de caràcters del text codificat")
+plt.xlabel("")
+plt.ylabel("")
+plt.show()
+```
 
 
-
-
-# Propietats d'un algoritme clàssic. 
-
-- Si tens la taula, saps l'algoritme i coneixes la clau pots desxifrar el missatge. 
 

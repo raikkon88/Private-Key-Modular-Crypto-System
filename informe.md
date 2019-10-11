@@ -127,73 +127,11 @@ plt.show()
 
 
 ```python
-plt.plot(seq30.keys(), seq5.values(), 'ro')
+plt.plot(seq30.keys(), seq30.values(), 'ro')
 plt.title("Agrupats per n = 5")
 plt.xlabel('Valors per n')
 plt.ylabel('Nombre de congruencies en Z/n per cada valor de n')
 plt.show()
-```
-
-```
----------------------------------------------------------------------------ValueError
-Traceback (most recent call last)<ipython-input-1-8fcdb352a504> in
-<module>
-----> 1 plt.plot(seq30.keys(), seq5.values(), 'ro')
-      2 plt.title("Agrupats per n = 5")
-      3 plt.xlabel('Valors per n')
-      4 plt.ylabel('Nombre de congruencies en Z/n per cada valor de
-n')
-      5 plt.show()
-~/.local/lib/python3.6/site-packages/matplotlib/pyplot.py in
-plot(scalex, scaley, data, *args, **kwargs)
-   2811     return gca().plot(
-   2812         *args, scalex=scalex, scaley=scaley, **({"data": data}
-if data
--> 2813         is not None else {}), **kwargs)
-   2814
-   2815
-~/.local/lib/python3.6/site-packages/matplotlib/__init__.py in
-inner(ax, data, *args, **kwargs)
-   1808                         "the Matplotlib list!)" %
-(label_namer, func.__name__),
-   1809                         RuntimeWarning, stacklevel=2)
--> 1810             return func(ax, *args, **kwargs)
-   1811
-   1812         inner.__doc__ = _add_data_doc(inner.__doc__,
-~/.local/lib/python3.6/site-packages/matplotlib/axes/_axes.py in
-plot(self, scalex, scaley, *args, **kwargs)
-   1609         kwargs = cbook.normalize_kwargs(kwargs,
-mlines.Line2D._alias_map)
-   1610
--> 1611         for line in self._get_lines(*args, **kwargs):
-   1612             self.add_line(line)
-   1613             lines.append(line)
-~/.local/lib/python3.6/site-packages/matplotlib/axes/_base.py in
-_grab_next_args(self, *args, **kwargs)
-    391                 this += args[0],
-    392                 args = args[1:]
---> 393             yield from self._plot_args(this, kwargs)
-    394
-    395
-~/.local/lib/python3.6/site-packages/matplotlib/axes/_base.py in
-_plot_args(self, tup, kwargs)
-    368             x, y = index_of(tup[-1])
-    369
---> 370         x, y = self._xy_from_xy(x, y)
-    371
-    372         if self.command == 'plot':
-~/.local/lib/python3.6/site-packages/matplotlib/axes/_base.py in
-_xy_from_xy(self, x, y)
-    229         if x.shape[0] != y.shape[0]:
-    230             raise ValueError("x and y must have same first
-dimension, but "
---> 231                              "have shapes {} and
-{}".format(x.shape, y.shape))
-    232         if x.ndim > 2 or y.ndim > 2:
-    233             raise ValueError("x and y can be no greater than
-2-D, but have "
-ValueError: x and y must have same first dimension, but have shapes
-(30,) and (5,)
 ```
 
 ![](figures/informe_graphics6_1.png){#graphics6 }\
@@ -227,7 +165,96 @@ Per motius òbvis de temps s'ha restringit molt l'algoritme per simplificar-ne e
 
 ### Taula àurea. 
 
-Utilitant els 300 valors s'ha aconseguit una taula com la següent : 
+Utilitzant els 300 valors s'ha aconseguit una taula com la següent : 
 
 ![Primera part de la taula](./figures/c1.png)
 ![Primera part de la taula](./figures/c2.png)
+
+On a cada columna s'hi sitúa el caràcter al que correspon l'encriptació i el seu valor de congruència a Z/n com a capçalera, mentre que a les files hi trobem els valors dels nombres de la sèrie de fibonacci. A cada columna hi ha els que son congruents entre ells i amb el nombre de la capçalera. 
+
+### Algoritme de xifrat (Substitució)
+
+No segueix cap esquema dels algoritmes que hem vist a classe, ha sigut invenció de l'autor. 
+
+L'algoritme de codificació es pot trobar al fitxer auric.py. Es parteix d'un algoritme cíclic, començant per la posició [0,0] de la taula, es llegeix el primer caràcter que es vol encriptar (sempre que estigui a dins del rang d'acceptació, és a dir, que formi part de l'alfabet), es transforma el seu valor en el valor decimal de la taula ascci i s'avança per la taula en horitzontal tantes caselles com el valor del caràcter ens marca, és cíclic per tant la posició 25 és la posició [25 % L][25 // L] on L = 25. 
+
+Per exemple, Volem codificar 'aa': 
+
+- Per la primera lletra 'a' s'avancen 97 valors i es cau a la columna 97%L i la fila 97//L. Obtinguent el seu corresponent valor de la sèrie de fibonacci. 
+- Es porta un comptador dels passos que s'han realitzat per a cada caràcter processat. De moment al llegir només la 'a' el comptatge està a 97. 
+- Per la segona lletra 'a' s'avancen 97 valors més des de l'última casella on ens hem situat anteriorment i es cau a la casella [(97+97)%L,(97+97)/L]. 
+
+Es realitza aquesta metodologia successivament fins a arrivar al final del text xifrat on el resultat del xifrat anterior és 'wt' i s'ha generat una clau corresponent a l'últim valor obtingut entre 0 i 299. Aquesta clau és la que marca d'inici del desencriptat. 
+
+Per tant la sortida consta de : 
+
+- text xifrat 
+- valor de la clau entre 0 i 299
+
+### Algoritme de desxifrat (Substitució)
+
+Utiltizem la mateixa taula per que hem utilitzat per encriptar, ara per desencriptar. L'algoritme per desencriptar és més simple peró té una gràcia afegida que no tenen els altres, i és que per poder desencriptar cal que hi hagi la relació de congruència entre un nombre de fibonacci de la taula i caràcter que segueix al caràcter que estem mirant. 
+
+Per poder començar requerim la clau, i és que la casella de sortida serà la casella corresponent al final de l'encriptació, en aquest cas [clau%L][clau//L]. Donada aquesta casella cal : 
+
+- Invertir la cadena encriptada (reverse) comencem per l'últim caràcter fins al primer. 
+- Llegir el següent caràcter, avançar de forma inversa a la que s'ha encriptat per la taula en sentit contrari 97 caselles, ja que hem de moure'ns a dins dels 25 possibles valors de la 'a' a la 'y'. 
+- Un cop situats hem de començar a comparar la congruència del caràcter següent de la cadena inversa, amb els següents 25 valors existents en forma de cercle, pararem quan es trobi una congruència entre el valor de fibonacci de la casella per la que avancem i el valor de la capçalera de la taula. 
+
+Seguin l'exemple anterior i situats a la casella (97+97), si retrocedim 97 valors apareixem a la casella 97, comprovem si el valor de fibonacci de la casella és congruent amb el 22 corresponent al valor de la w xifrada, ho és per tant ja tenim la primera 'a', per trobar la segona 'a' simplement hem de transformar el valor restant en un caràcter. 
+
+Podriem dir que : 
+
+donats : 
+
+- un caràcter c
+- una posició n a la taula
+- la posició i del caràcter c al text xifrat
+
+El valor del desxifrat serà el primer valor congruent dins de la primera sèrie de 25 valors a des de n-97 fins a n-97-25, tal que el valor de fibonacci sigui congruent amb la codificació numèrica del caràcter i+1 del text. (veure l'algoritme o cridar-me a tutories per més informació.).
+
+## Algoritme de xifrat (Transformació)
+
+Un cop s'ha aplicat l'algoritme de xifrat per subsitució s'aplica l'algoritme de xifrat railfence. 
+
+L'aplicació d'aquest algoritme és mitjançant la clau. s'utilitzen un nombre de rails variable entre 1 i |clau| % 25 + 1, per tant hi haurà entre 1 i 25 rails. S'ha optat per aquest sistema per integrar la clau al xifratge per transformació. S'ha volgut aplicar el 25 com a màxim nombre de rails degut a que ha sigut un nombe significant a la realització de la pràctica. El gran esforç en aquesta pràctica s'ha destinat a l'algoritme de substitució. 
+
+S'ha utilitzat el mateix algoritme que s'ha vist a classe a les transparències amb la variant que aquest algoritme no requereix alfabet i treballa sobre tots els caràcters. Aquest fet ens ajuda a amagar els caràcters que no es poden xifrar amb l'algoritme de substitució. 
+
+# Propietats de l'algoritme presentat
+
+- Si tens la taula, saps l'algoritme i coneixes la clau pots desxifrar el missatge. (assimila als algoritmes clàssics)
+- Es cerca homogeneitzar l'IC mitjançant la propietat de fibonacci % 25
+- S'utiltiza l'aritmètica modular per poder desxifrar els caràcters. 
+
+# Càlcul de l'IC. 
+
+Suposarem un text en anglés per a l'encriptat i el posterior anàlisi de l'Index de coincidència. El text proposat és el llibre de frankenstain que es pot trobar a la referència [1] o bé al directori txt sota el nom de frankenstain. 
+
+Després de codificar el text i desar-lo amb el nom de codificat.txt, obrim el fitxer que acabem de generar i filtrem tots els caràcters de l'alfabet fent un histograma de les aparicions. 
+
+
+```python
+histograma = dict()
+book = ""
+with open("txt/codificat.txt", 'r', encoding='utf-8') as fileobj:
+    for line in fileobj:  
+        for ch in line: 
+            if ch >= 'a' and ch <= 'z': 
+                if ch in histograma:
+                    histograma[ch] += 1
+                else: 
+                    histograma[ch] = 1
+
+plt.plot(histograma.keys(), histograma.values(), 'ro')
+plt.title("Histograma de caràcters del text codificat")
+plt.xlabel("")
+plt.ylabel("")
+plt.show()
+```
+
+![](figures/informe_readbook_1.png){#readbook }\
+
+
+
+
