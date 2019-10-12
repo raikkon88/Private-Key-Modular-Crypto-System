@@ -1,18 +1,34 @@
-import matplotlib.pyplot as plt
-from datetime import datetime
+#import matplotlib.pyplot as plt
+#from datetime import datetime
 import auric
 import RailFence
 
-text = "zfaksjhdflkauehkaetal ukeyhtaksjdhlkathekjryh askdjhajtahsbdafba z z z"
+key = "santmori"
+text = "abcd"
+L = 128
+firstChar = 0
+lastChar = 127
+# matrix, columns, length = auric.generateMatrix(text, L)
+encoded = auric.encode(text, key, L)
+print(encoded)
+decoded = auric.decode(encoded, key, L)
+print(decoded)
+#print(matrix)
+#print(columns)
+#print(length)
+#print(len(matrix) * len(matrix[0]))
+
+
+
 #text = "zazaz"
 
-print("Codifiquem : " + text)
-encoded, key = auric.encode(text)
-print("AURI = " + encoded + " -> " + str(key))
-final = RailFence.codifica(encoded, key % 25)
-print("FENCE = " + final + " -> " + str(key))
+#print("Codifiquem : " + text)
+#encoded, key = auric.encode(text)
+#print("AURI = " + encoded + " -> " + str(key))
+#final = RailFence.codifica(encoded, key % 25)
+#print("FENCE = " + final + " -> " + str(key))
 
-decoded = RailFence.descodifica(final, key % 25)
-print("FENCE = " + decoded)
-resultat = auric.decode(decoded, key)
-print("AURI = " + resultat)
+#decoded = RailFence.descodifica(final, key % 25)
+#print("FENCE = " + decoded)
+#resultat = auric.decode(decoded, key)
+#print("AURI = " + resultat)
