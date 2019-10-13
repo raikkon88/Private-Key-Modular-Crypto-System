@@ -26,8 +26,8 @@ with open(bookName, 'r', encoding='utf-8') as fileobj:
 
 firstChar = 32
 lastChar = 127
-encoded = auric.encode(book, password, firstChar, lastChar)
-#encoded = RailFence.codifica(firstEncoding, 4)
+firstEncoding = auric.encode(book, password, firstChar, lastChar)
+encoded = RailFence.codifica(firstEncoding, 4)
 
 if os.path.isfile(encodedFile):
     os.remove(encodedFile)
