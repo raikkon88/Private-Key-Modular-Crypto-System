@@ -8,7 +8,11 @@ key = "d"
 text = "asdf"
 
 firstChar = 32
-lastChar = 126
+lastChar = 127
+
+print(lastChar - firstChar)
+
+
 # matrix, columns, length = auric.generateMatrix(text, L)
 encoded = auric.encode(text, key, firstChar, lastChar)
 print(encoded)
