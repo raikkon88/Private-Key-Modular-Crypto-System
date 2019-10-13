@@ -96,10 +96,11 @@ def encode(text, key, L):
     for char in text:
         if ord(char) >= 0 and ord(char) <= L-1: 
             numb = matrix[counter % L][counter // L]
-            valueZN = numb % L
-            print(char + " -> " + str(numb) + " -> " + str(valueZN) + " -> " + chr(valueZN))
+            valueZN = numb % L 
             result += chr(valueZN) 
-            counter += ord(char) % length
+            counter += ord(char)
+            counter = counter % length
+            #print(char + " -> " + str(numb) + " -> " + str(valueZN) + " -> " + chr(valueZN))
         else: 
             result += char
         i += 1
@@ -146,30 +147,29 @@ def decode(cryptedText, key, L):
             tmp = tmp + cryptedText[j]
             j += 1        
 
-        print("i = " + str(i) + " | j = "+ str(j) + " | start = " + str(start) + " | stop = " + str(stop))
+        #print("i = " + str(i) + " | j = "+ str(j) + " | start = " + str(start) + " | stop = " + str(stop))
         
         if j < textLength and i < textLength:
             c2 = ord(cryptedText[j])
             counter = 0
             while start != stop and matrix[start % L][start // L] % L != c2:
                 counter += 1
-                start += 1 % length
-            print("frenen les dues " + str(cryptedText[i]) + " next " + str(cryptedText[j]) + " -> " + str(counter))
-            unciferedResult += tmp + chr(counter)
+                start += 1 
+                start = start % length
+            #print("frenen les dues " + str(cryptedText[i]) + " next " + str(cryptedText[j]) + " -> " + str(counter))
+            unciferedResult += chr(counter) + tmp
 
 
         elif j >= textLength  and i < textLength:
-            print("Últim caràcter, start -> "+ str(start) + " stop -> " + str(stop) + " to char -> " + cryptedText[i])
-            print(ord(cryptedText[i]))
-            print(matrix[start % L][start // L])
-            counter = 0
-            while start != stop and matrix[start % L][start // L] % L != ord(cryptedText[i]):
-                counter += 1
-                start += 1 % length
-
-            print(counter)
-            unciferedResult += tmp + chr(counter) 
-            j += 1
+            # Tinc start a la penúltima lletra. 
+            #print(cryptedText[j])
+            last = start + ord(cryptedText[j])
+            while matrix[last % L][last // L] % L != 0:
+                #print(str(last) + " -> " + str(last - start))
+                last += 1
+                last = last % length
+            unciferedResult += chr(last - start - ord(cryptedText[j])) + tmp
+            #print(str(last) + " -> " + str(ord(cryptedText[j])) + " -> " + str(last - ord(cryptedText[j]) - start))
            
         # else: 
             # Nothing to do ... print("els altres casos ")
