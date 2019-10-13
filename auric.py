@@ -79,15 +79,31 @@ def encode(text, key, L):
     length = len(matrix) * len(matrix[0])
     result= ""
     counter = random.randint(0, length)
+    i = 0
+    final = len(text) - 1
+    lastCharValue = ""
     for char in text:
+        print(str(i) + " counter: " + str(counter))
         if ord(char) >= 0 and ord(char) <= L-1: 
-            numb = matrix[counter % L][counter // L]
-            valueZN = numb % L
-            print(char + " -> " + str(numb) + " -> " + str(valueZN) + " -> " + chr(valueZN))
-            result += chr(valueZN)
-            counter += ord(char) % length
+            if i == final:
+                # Tinc el contador augmentat...
+                counter -= lastCharValue
+                valueZN = 1
+                # Fixo fins el 0, és la meva marca de fi!
+                while valueZN != 0:
+                    valueZN = matrix[counter % L][counter // L] % L
+                    counter += 1
+                result += chr(valueZN)
+            else:    
+                numb = matrix[counter % L][counter // L]
+                valueZN = numb % L
+                print(char + " -> " + str(numb) + " -> " + str(valueZN) + " -> " + chr(valueZN))
+                result += chr(valueZN) 
+                lastCharValue = ord(char) % length
+                counter += lastCharValue
         else: 
             result += char
+        i += 1
 
     return result
 
@@ -131,8 +147,11 @@ def decode(cryptedText, key, L):
             unciferedResult += tmp + chr(counter)# + unciferedResult
 
         elif j >= len(cryptedText) and i < len(cryptedText):
-            print("Últim caràcter, start -> " + str(start) + " stop -> " +str(stop) )
-            unciferedResult += tmp + chr(stop - start) #  + unciferedResult
+            counter = 0
+            while matrix[start % L][start // L] % L != 0:
+                counter += 1
+            #print("Últim caràcter, start -> " + str(start) + " stop -> " +str(stop) + " -> ")
+            unciferedResult += tmp + chr(counter) #  + unciferedResult
         # else: 
             # Nothing to do ... print("els altres casos ")
         i = j
