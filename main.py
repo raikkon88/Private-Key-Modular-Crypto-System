@@ -3,7 +3,7 @@
 import auric
 import RailFence
 
-key = "santmori"
+key = "d"
 text = "abcd"
 L = 128
 firstChar = 0
@@ -11,8 +11,8 @@ lastChar = 127
 # matrix, columns, length = auric.generateMatrix(text, L)
 encoded = auric.encode(text, key, L)
 print(encoded)
-decoded = auric.decode(encoded, key, L)
-print(decoded)
+#decoded = auric.decode(encoded, key, L)
+#print(decoded)
 #print(matrix)
 #print(columns)
 #print(length)

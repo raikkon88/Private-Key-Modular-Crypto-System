@@ -54,6 +54,7 @@ def generateMatrix(L, random):
             start += 1
         i += 1
 
+    print(matrix)
     return matrix
 
 # Nombre de caràcters de l'alfabet
@@ -69,6 +70,18 @@ totalFiboNumbers = len(fibonacci300)
 # matrix = list()
 # Convertim les apparences en una matriu.
 # matrix = list()
+# if i == final:
+    # Tinc el contador augmentat...
+#    counter -= lastCharValue
+#    valueZN = 1
+#    # Fixo fins el 0, és la meva marca de fi!
+#    while valueZN != 0:
+#        valueZN = matrix[counter % L][counter // L] % L
+#        counter = circularless(counter, 1)
+#    print(char + " -> " + str(numb) + " -> " + str(valueZN) + " -> " + chr(valueZN))
+#    result += chr(valueZN)
+#else:    
+
 
 # for i in sorted(list(appearances.keys())):
 #    matrix.append(appearances[i])
@@ -85,25 +98,23 @@ def encode(text, key, L):
     for char in text:
         print(str(i) + " counter: " + str(counter))
         if ord(char) >= 0 and ord(char) <= L-1: 
-            if i == final:
-                # Tinc el contador augmentat...
-                counter -= lastCharValue
-                valueZN = 1
-                # Fixo fins el 0, és la meva marca de fi!
-                while valueZN != 0:
-                    valueZN = matrix[counter % L][counter // L] % L
-                    counter += 1
-                result += chr(valueZN)
-            else:    
-                numb = matrix[counter % L][counter // L]
-                valueZN = numb % L
-                print(char + " -> " + str(numb) + " -> " + str(valueZN) + " -> " + chr(valueZN))
-                result += chr(valueZN) 
-                lastCharValue = ord(char) % length
-                counter += lastCharValue
+            numb = matrix[counter % L][counter // L]
+            valueZN = numb % L
+            print(char + " -> " + str(numb) + " -> " + str(valueZN) + " -> " + chr(valueZN))
+            result += chr(valueZN) 
+            lastCharValue = ord(char) % length
+            counter += lastCharValue
         else: 
             result += char
         i += 1
+
+    last = 0
+    while matrix[counter % L][counter // L] % L != 0:
+        last += 1
+        counter += 1
+
+    print(str(last) + " Hi poso el tap " + chr(last)) 
+    result += chr(last)
 
     return result
 
@@ -136,13 +147,13 @@ def decode(cryptedText, key, L):
         
         
         if j < len(cryptedText) and i < len(cryptedText):
-            print("frenen les dues" + str(cryptedText[i]) + " next " + str(cryptedText[j]))
             c2 = ord(cryptedText[j])
             counter = 0
             while start != stop and matrix[start % L][start // L] % L != c2:
                 counter += 1
                 start += 1 #= circularless(start, 1)
             stop += L # = circularless(start, L)
+            print("frenen les dues " + str(cryptedText[i]) + " next " + str(cryptedText[j]) + " -> " + str(counter))
             unciferedResult += tmp + chr(counter)# + unciferedResult
 
         elif j >= len(cryptedText) and i < len(cryptedText):
