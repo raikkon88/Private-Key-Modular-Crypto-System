@@ -54,7 +54,6 @@ def generateMatrix(L, random):
             start += 1
         i += 1
 
-    print(matrix)
     return matrix
 
 # Nombre de caràcters de l'alfabet
