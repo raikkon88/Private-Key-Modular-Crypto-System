@@ -24,7 +24,9 @@ with open(bookName, 'r', encoding='utf-8') as fileobj:
         for ch in line: 
             book += ch
 
-encoded = auric.encode(book, password, 128)
+firstChar = 65
+lastChar = 90
+encoded = auric.encode(book, password, firstChar, lastChar)
 #encoded = RailFence.codifica(firstEncoding, 4)
 
 if os.path.isfile(encodedFile):

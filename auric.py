@@ -56,6 +56,7 @@ def generateMatrix(L, random):
 
     return matrix
 
+
 # Nombre de caràcters de l'alfabet
 #L = 26
 #firstChar = ord("a")
@@ -81,11 +82,11 @@ totalFiboNumbers = len(fibonacci300)
 #    result += chr(valueZN)
 #else:    
 
-
 # for i in sorted(list(appearances.keys())):
 #    matrix.append(appearances[i])
 
-def encode(text, key, L):
+def encode(text, key, firstChar, lastChar):
+    L = lastChar - firstChar
     random.seed(key, version=2)
     matrix = generateMatrix(L, random)
     length = len(matrix) * len(matrix[0])
@@ -94,13 +95,13 @@ def encode(text, key, L):
     i = 0
     print(str(i) + " counter: " + str(counter))
     for char in text:
-        if ord(char) >= 0 and ord(char) <= L-1: 
+        if ord(char) >= firstChar and ord(char) <= lastChar: 
             numb = matrix[counter % L][counter // L]
             valueZN = numb % L 
-            result += chr(valueZN) 
+            result += chr(valueZN + firstChar) 
             counter += ord(char)
             counter = counter % length
-            #print(char + " -> " + str(numb) + " -> " + str(valueZN) + " -> " + chr(valueZN))
+            print(char + " -> " + str(numb) + " -> " + str(valueZN) + " -> " + chr(valueZN))
         else: 
             result += char
         i += 1
@@ -112,29 +113,29 @@ def encode(text, key, L):
         counter += 1
 
     print(str(last) + " Hi poso el tap " + chr(last)) 
-    result += chr(last)
+    result += chr(last + firstChar)
 
     return result
 
 
-def inRange(char, L): 
-    return (ord(char) >= 0 and ord(char) <= L)
+def inRange(char, first, last): 
+    return (ord(char) >= first and ord(char) <= last)
 
-def decode(cryptedText, key, L):
-
+def decode(cryptedText, key, firstChar, lastChar):
+    L = lastChar -  firstChar
     random.seed(key, version=2)
     matrix = generateMatrix(L, random)
     length = len(matrix) * len(matrix[0])
     unciferedResult = ""
-    start = random.randint(0, length)
+    start = random.randint(0, length) + firstChar
     textLength = len(cryptedText) - 1
-    
+    print(cryptedText)
     i = 0
     while i < len(cryptedText) - 1: 
 
         stop = start + L % length
 
-        while i < textLength and not inRange(cryptedText[i], L):
+        while i < textLength and not inRange(cryptedText[i], firstChar, lastChar):
             print("descarto -> " + str(cryptedText[i]) + " al bucle 1")
             unciferedResult += cryptedText[i]
             i += 1
@@ -142,33 +143,34 @@ def decode(cryptedText, key, L):
         j = i + 1
 
         tmp = ""
-        while j < textLength and not inRange(cryptedText[j], L):
+        while j < textLength and not inRange(cryptedText[j], firstChar, lastChar):
             print("descarto -> " + str(cryptedText[j]) + " al bucle 2")
             tmp = tmp + cryptedText[j]
             j += 1        
 
-        #print("i = " + str(i) + " | j = "+ str(j) + " | start = " + str(start) + " | stop = " + str(stop))
+        print("i = " + str(i) + " | j = "+ str(j) + " | start = " + str(start) + " | stop = " + str(stop))
         
         if j < textLength and i < textLength:
-            c2 = ord(cryptedText[j])
+            c2 = ord(cryptedText[j]) - firstChar
             counter = 0
             while start != stop and matrix[start % L][start // L] % L != c2:
                 counter += 1
                 start += 1 
                 start = start % length
-            #print("frenen les dues " + str(cryptedText[i]) + " next " + str(cryptedText[j]) + " -> " + str(counter))
-            unciferedResult += chr(counter) + tmp
+            print("frenen les dues " + str(cryptedText[i]) + " next " + str(cryptedText[j]) + " -> " + str(counter))
+            start += firstChar
+            unciferedResult += chr(counter + firstChar) + tmp
 
 
         elif j >= textLength  and i < textLength:
             # Tinc start a la penúltima lletra. 
             #print(cryptedText[j])
-            last = start + ord(cryptedText[j])
+            last = start + ord(cryptedText[j]) 
             while matrix[last % L][last // L] % L != 0:
                 #print(str(last) + " -> " + str(last - start))
                 last += 1
                 last = last % length
-            unciferedResult += chr(last - start - ord(cryptedText[j])) + tmp
+            unciferedResult += chr(last - start + firstChar - (ord(cryptedText[j]) - firstChar)) + tmp
             #print(str(last) + " -> " + str(ord(cryptedText[j])) + " -> " + str(last - ord(cryptedText[j]) - start))
            
         # else: 

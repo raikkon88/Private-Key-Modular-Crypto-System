@@ -4,19 +4,21 @@ import auric
 import RailFence
 
 
-key = "perlanalaringo"
+key = "d"
 text = "asdf"
-L = 128
+
 firstChar = 32
 lastChar = 126
 # matrix, columns, length = auric.generateMatrix(text, L)
-encoded = auric.encode(text, key, L)
+encoded = auric.encode(text, key, firstChar, lastChar)
 print(encoded)
 
-decoded = auric.decode(encoded, key, L)
+print("----------------------------------------------")
+#
+decoded = auric.decode(encoded, key, firstChar, lastChar)
 print(decoded)
-
-#print(matrix)
+#
+##print(matrix)
 #print(columns)
 #print(length)
 #print(len(matrix) * len(matrix[0]))

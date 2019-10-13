@@ -24,8 +24,10 @@ with open(encodedFile, 'r', encoding='utf-8') as fileobj:
         for ch in line: 
             book += ch
 
+firstChar = 65
+lastChar = 90
 #firstDecode = RailFence.descodifica(book, 4)
-decoded = auric.decode(book, password, 128)
+decoded = auric.decode(book, password, firstChar, lastChar)
 
 if os.path.isfile(decodedFile):
     os.remove(decodedFile)
