@@ -3,41 +3,46 @@
 import auric
 import RailFence
 
+def doAction(fileName, key, firstChar, lastChar):
+    text = ""
+    with open(fileName, 'r', encoding='utf-8') as fileobj:
+        for line in fileobj:  
+            for ch in line: 
+                text += ch
 
-key = "d"
-text = "asdf"
+    # matrix, columns, length = auric.generateMatrix(text, L)
+    print("")
+    encoded = auric.encode(text, key, firstChar, lastChar)
+    print("ENCODED TEXT By SUBSTITUTION :")
+    print("-----------------------------------------------")
+    print(encoded)
 
+    print("")
+    fenced = RailFence.codifica(encoded, len(key))
+    print("ENCODED TEXT By SUBSTITUTION + TRANSFORMATION :")
+    print("-----------------------------------------------")
+    print(fenced)
+
+    print("")
+    defenced = RailFence.descodifica(fenced, len(key))
+    print("DECODED TEXT By SUBSTITUTION + TRANSFORMATION :")
+    print("-----------------------------------------------")
+    print(defenced)
+
+    print("")
+    decoded = auric.decode(defenced, key, firstChar, lastChar)
+    print("DECODED TEXT By SUBSTITUTION + TRANSFORMATION :")
+    print("-----------------------------------------------")
+    print(decoded)
+
+
+key = "frankenstain"
 firstChar = 32
 lastChar = 127
+shortFileName = "txt/short.txt"
+doAction(shortFileName, key, firstChar, lastChar)
 
-print(lastChar - firstChar)
+print("-----------------------------------------------------------------------------------------------------")
 
-
-# matrix, columns, length = auric.generateMatrix(text, L)
-encoded = auric.encode(text, key, firstChar, lastChar)
-print(encoded)
-
-print("----------------------------------------------")
-#
-decoded = auric.decode(encoded, key, firstChar, lastChar)
-print(decoded)
-#
-##print(matrix)
-#print(columns)
-#print(length)
-#print(len(matrix) * len(matrix[0]))
-
-
-
-#text = "zazaz"
-
-#print("Codifiquem : " + text)
-#encoded, key = auric.encode(text)
-#print("AURI = " + encoded + " -> " + str(key))
-#final = RailFence.codifica(encoded, key % 25)
-#print("FENCE = " + final + " -> " + str(key))
-
-#decoded = RailFence.descodifica(final, key % 25)
-#print("FENCE = " + decoded)
-#resultat = auric.decode(decoded, key)
-#print("AURI = " + resultat)
+longFileName = "txt/long.txt"
+doAction(longFileName, key, firstChar, lastChar)

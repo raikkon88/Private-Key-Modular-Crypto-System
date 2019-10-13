@@ -1,4 +1,14 @@
 #!/usr/bin/python3
+# Autor : Marc Sànchez Pifarré
+# Programa de codificació
+# IN : 
+# - bookName -> Nom de fitxer a codificar
+# - encodedFile -> Nom de fitxer a on desar el text codificat
+# - password -> Paraula de pas o clau per a la codificació
+
+# OUT : 
+# - A encodedFile hi ha el text de bookName xifrat amb la clau password
+
 import sys
 import os
 import auric
@@ -27,7 +37,7 @@ with open(bookName, 'r', encoding='utf-8') as fileobj:
 firstChar = 32
 lastChar = 127
 firstEncoding = auric.encode(book, password, firstChar, lastChar)
-encoded = RailFence.codifica(firstEncoding, 4)
+encoded = RailFence.codifica(firstEncoding, len(password))
 
 if os.path.isfile(encodedFile):
     os.remove(encodedFile)

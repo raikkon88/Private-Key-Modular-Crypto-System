@@ -1,5 +1,7 @@
 import random
 def fibonacci(n):
+# Donat un n
+# Retorn el nombre n-essim de la sèrie de fibonacci
     if n < 0: 
         raise Exception("Fibonnacci of " + str(n) + " does not exists.")
     if n <= 1:
@@ -7,6 +9,10 @@ def fibonacci(n):
     return fibonacci(n-1) + fibonacci(n-2)
 
 def generateAppearances(fibonacci300, L):
+# Donada una llista de nombres i un valor L
+# Genera un hash on : 
+# - clau : valor del nombre a Z/L
+# - valor : llista de nombres congruents amb clau a Z/L
     appearences = dict()
     for i in fibonacci300:
         number = i % L
@@ -17,6 +23,8 @@ def generateAppearances(fibonacci300, L):
     return appearences
 
 def circularless(start, n):
+# Donats start i n enters positius
+# retorna start - n % 300
     for i in range(n):
         start -= 1
         if start < 0: 
@@ -25,11 +33,15 @@ def circularless(start, n):
 
 
 def printAppearances(appearances, L):
+# Donat un diccionari en forma d'histograma i un L enter positiu
+# Mostra appearances per la sortida estàndard. 
     i = 0
     for i in range(L):
         print("|" + str(i) + "| = " + str(len(appearances[i])) + " -> " + str(appearances[i]))
 
 def printMatrix(matrix):
+# Donada una matriu de valors enters
+# Mostra la matriu per la sortida estàndard
     for i in range(len(matrix)):
         result = str(i) + " -> " 
         for j in range(len(matrix[i])):
@@ -37,7 +49,10 @@ def printMatrix(matrix):
     print(result)
 
 def generateMatrix(L, random):
-# Donada una clau s'ha de poder generar una llavor. 
+# Donada L com enter positiu i random com a llavor
+# Genera una matriu quadrada d'un rang aleatori de nombres de L * L caselles on : 
+# - Cada columna significa el nombre a Z/L
+# - Els valors de les columnes son tots congruents amb el valor de la mateixa columna. 
     start = random.randint(1, 10000000000000) 
     stop = random.randint(1, 1000000000000000000000000000000000000000000000000)
     if start > stop: 
@@ -56,6 +71,8 @@ def generateMatrix(L, random):
     return matrix
 
 def encode(text, key, firstChar, lastChar):
+# Donats text per xifrar, key com a clau, firstChar i lastChar com valors decimals dels caràcters que defineixen el rang de la taula ascii a processar
+# Retorna un nou string amb tots els caràcters entre firstChar i lastChar de text codificats amb key
     L = lastChar - firstChar 
     random.seed(key, version=2)
     matrix = generateMatrix(L, random)
@@ -86,9 +103,13 @@ def encode(text, key, firstChar, lastChar):
 
 
 def inRange(char, first, last): 
+# Donats char com a caràcter, first i last com enters positius (valors decimals de caràcters)
+# Retorna cert si char està dins del rang que delimiten first i last, fals altrament
     return (ord(char) >= first and ord(char) <= last)
 
 def decode(cryptedText, key, firstChar, lastChar):
+# Donats cryptedText per desxifrar, key com a clau, firstChar i lastChar com valors decimals dels caràcters que defineixen el rang de la taula ascii a processar
+# Retorna un nou string amb tots els caràcters entre firstChar i lastChar de cryptedText descodificats amb key
     L = lastChar -  firstChar 
     random.seed(key, version=2)
     matrix = generateMatrix(L, random)

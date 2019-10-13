@@ -1,4 +1,14 @@
 #!/usr/bin/python3
+# Autor : Marc Sànchez Pifarré
+# Programa de descodificació
+# IN : 
+# - encodedFile -> Nom de fitxer a descodificar
+# - decodedFile -> Nom de fitxer a on desar el text descodificat
+# - password -> Paraula de pas o clau per a la descodificació
+
+# OUT : 
+# - A decodedFile hi ha el text de encodedFile desxifrat amb la clau password
+
 import sys
 import os
 import auric
@@ -26,7 +36,7 @@ with open(encodedFile, 'r', encoding='utf-8') as fileobj:
 
 firstChar = 32
 lastChar = 127
-firstDecode = RailFence.descodifica(book, 4)
+firstDecode = RailFence.descodifica(book, len(password))
 decoded = auric.decode(firstDecode, password, firstChar, lastChar)
 
 if os.path.isfile(decodedFile):
