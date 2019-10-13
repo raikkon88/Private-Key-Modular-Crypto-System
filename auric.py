@@ -92,20 +92,18 @@ def encode(text, key, L):
     result= ""
     counter = random.randint(0, length)
     i = 0
-    final = len(text) - 1
-    lastCharValue = ""
+    print(str(i) + " counter: " + str(counter))
     for char in text:
-        print(str(i) + " counter: " + str(counter))
         if ord(char) >= 0 and ord(char) <= L-1: 
             numb = matrix[counter % L][counter // L]
             valueZN = numb % L
             print(char + " -> " + str(numb) + " -> " + str(valueZN) + " -> " + chr(valueZN))
             result += chr(valueZN) 
-            lastCharValue = ord(char) % length
-            counter += lastCharValue
+            counter += ord(char) % length
         else: 
             result += char
         i += 1
+        print(str(i) + " counter: " + str(counter))
 
     last = 0
     while matrix[counter % L][counter // L] % L != 0:
@@ -128,10 +126,14 @@ def decode(cryptedText, key, L):
     length = len(matrix) * len(matrix[0])
     unciferedResult = ""
     start = random.randint(0, length)
-    stop = start + L
+    textLength = len(cryptedText) - 1
+    
     i = 0
-    while i < len(cryptedText): 
-        while i < len(cryptedText) and not inRange(cryptedText[i], L):
+    while i < len(cryptedText) - 1: 
+
+        stop = start + L % length
+
+        while i < textLength and not inRange(cryptedText[i], L):
             print("descarto -> " + str(cryptedText[i]) + " al bucle 1")
             unciferedResult += cryptedText[i]
             i += 1
@@ -139,30 +141,39 @@ def decode(cryptedText, key, L):
         j = i + 1
 
         tmp = ""
-        while j < len(cryptedText) and not inRange(cryptedText[j], L):
+        while j < textLength and not inRange(cryptedText[j], L):
             print("descarto -> " + str(cryptedText[j]) + " al bucle 2")
             tmp = tmp + cryptedText[j]
             j += 1        
+
+        print("i = " + str(i) + " | j = "+ str(j) + " | start = " + str(start) + " | stop = " + str(stop))
         
-        
-        if j < len(cryptedText) and i < len(cryptedText):
+        if j < textLength and i < textLength:
             c2 = ord(cryptedText[j])
             counter = 0
             while start != stop and matrix[start % L][start // L] % L != c2:
                 counter += 1
-                start += 1 #= circularless(start, 1)
-            stop += L # = circularless(start, L)
+                start += 1 % length
             print("frenen les dues " + str(cryptedText[i]) + " next " + str(cryptedText[j]) + " -> " + str(counter))
-            unciferedResult += tmp + chr(counter)# + unciferedResult
+            unciferedResult += tmp + chr(counter)
 
-        elif j >= len(cryptedText) and i < len(cryptedText):
+
+        elif j >= textLength  and i < textLength:
+            print("Últim caràcter, start -> "+ str(start) + " stop -> " + str(stop) + " to char -> " + cryptedText[i])
+            print(ord(cryptedText[i]))
+            print(matrix[start % L][start // L])
             counter = 0
-            while matrix[start % L][start // L] % L != 0:
+            while start != stop and matrix[start % L][start // L] % L != ord(cryptedText[i]):
                 counter += 1
-            #print("Últim caràcter, start -> " + str(start) + " stop -> " +str(stop) + " -> ")
-            unciferedResult += tmp + chr(counter) #  + unciferedResult
+                start += 1 % length
+
+            print(counter)
+            unciferedResult += tmp + chr(counter) 
+            j += 1
+           
         # else: 
             # Nothing to do ... print("els altres casos ")
+       
         i = j
 
     return unciferedResult

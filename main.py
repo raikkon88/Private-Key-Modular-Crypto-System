@@ -4,7 +4,7 @@ import auric
 import RailFence
 
 key = "d"
-text = "abcd"
+text = "a"
 L = 128
 firstChar = 0
 lastChar = 127
