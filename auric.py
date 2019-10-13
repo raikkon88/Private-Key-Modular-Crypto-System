@@ -112,6 +112,7 @@ def encode(text, key, firstChar, lastChar):
 
     #print(str(last) + " Hi poso el tap " + chr(last)) 
     result += chr(last + firstChar)
+    
 
     return result
 
@@ -155,7 +156,7 @@ def decode(cryptedText, key, firstChar, lastChar):
                 counter += 1
                 start += 1 
                 start = start % length
-                print(str(start & L) + " -> " + str(start // L))
+                #print(str(start & L) + " -> " + str(start // L))
             #print("frenen les dues " + str(cryptedText[i]) + " next " + str(cryptedText[j]) + " -> " + str(counter))
             start += firstChar
             start = start % length
@@ -165,14 +166,15 @@ def decode(cryptedText, key, firstChar, lastChar):
         elif j >= textLength  and i < textLength:
             # Tinc start a la penúltima lletra. 
             #print(cryptedText[j])
-            last = start + ord(cryptedText[j]) 
+            last = start + ord(cryptedText[j])
             while matrix[last % L][last // L] % L != 0:
                 #print(str(last) + " -> " + str(last - start))
                 last += 1
                 last = last % length
-            unciferedResult += chr(last - start - firstChar + 1 - (ord(cryptedText[j]))) + tmp
-            #print(str(last) + " -> " + str(ord(cryptedText[j])) + " -> " + str(last - ord(cryptedText[j]) - start))
-           
+            
+            print(str(last - ord(cryptedText[j])))
+            print(chr(last - ord(cryptedText[j]) - start + 1 - firstChar))
+            unciferedResult += chr(last - ord(cryptedText[j]) - start + 1 - firstChar) + tmp
         # else: 
             # Nothing to do ... print("els altres casos ")
        
