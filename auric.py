@@ -123,7 +123,6 @@ def decode(cryptedText, key, L):
     while i < len(cryptedText): 
         while i < len(cryptedText) and not inRange(cryptedText[i], L):
             print("descarto -> " + str(cryptedText[i]) + " al bucle 1")
-            # unciferedResult = cryptedText[i] + unciferedResult
             unciferedResult += cryptedText[i]
             i += 1
 
