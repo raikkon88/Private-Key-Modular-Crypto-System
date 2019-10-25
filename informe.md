@@ -456,12 +456,11 @@ Ens basem en el resultat obtingut al codificar el llibre frankenstain vist en el
 
 ## Aǹalisi a fer 
 
-- Tipus d'algoritme
-- Taula de freqüències i càlcul de l'IC
-- Càlcul de la incertesa del llenguatge
-- Càlcul de l'entropia del llenguatge
-- Ràtio absoluta del llenguatge
-- Ràtio verdadera del llenguatge
+- Tipus d'algoritme.
+- Taula de freqüències i càlcul de l'IC.
+- Ràtio absoluta del llenguatge.
+- Ràtio verdadera del llenguatge.
+- Càlcul de la redundància del llenguatge.
 
 ## Tipus d'algoritme
 
@@ -583,108 +582,215 @@ En el nostre cas el calculem de la següent manera :
 
 
 ```python
-L=95
-for value in histograma.values():
-    print(value)
+import Utils
+ic = Utils.ic_calculation("txt/codificat-modular.txt", 32, 126)
 ```
 
 ```
-4648
-4629
-4617
-4436
-4504
-4502
-4582
-4614
-4670
-4616
-4627
-4546
-4583
-4527
-4602
-4584
-4581
-4606
-4523
-4526
-4579
-4558
-4654
-4525
-4576
-4544
-4526
-4515
-4444
-4506
-4648
-4550
-4463
-4444
-4446
-4616
-4577
-4543
-4613
-4515
-4645
-4577
-4750
-4660
-4457
-4411
-4680
-4601
-4526
-4610
-4571
-4678
-4551
-4488
-4519
-4460
-4716
-4473
-4472
-4627
-4536
-4515
-4484
-4543
-4645
-4521
-4524
-4443
-4553
-4583
-4425
-4487
-4474
-4582
-4580
-4540
-4523
-4480
-4623
-4505
-4609
-4537
-4692
-4512
-4588
-4434
-4654
-4494
-4513
-4603
-4531
-4623
-4558
-4650
-4534
+L=95
 ```
+
+
+Podem veure com el nostre IC s'acosta molt a 1, de fet és inferior a 1, aixó ens indica que és un xifrat polimòrfic. 
+
+## Càlcul de l'Entropia i de les ratios.
+
+Es vol calcular l'entropia del llenguatge anglés i comparar-lo després amb el fitxer que s'ha codificat. Per fer-ho el primer que hem de fer és aconseguir una relació de paraules en anglés. Per fer-ho (en màquines unix) podem consultar directament el fitxer /usr/share/dict/words. On hi ha totes les paraules escrites en anglés. La idea és comparar les ratios, del llenguatge en anglés, i del text xifrat per veure o per intentar deduïr amb quin idioma està escrit el text xifrat. 
+
+Volquem el fitxer en un fitxer de text dins d'aquest directori. 
+
+```
+cat /usr/share/dict/words > ~/Projects/seguretat/seguretat-p3/txt/words.txt
+```
+
+Hem de cercar el nombre de caràcters de l'alfabet. Considerant que estan tots els mots en minúscoles, fem ús del fitxer que acabem de generar amb tots els mots de l'alfabet anglés. Tot seguit contem el nombre de caràcters que apareix en aquest fitxer i generm el diccionai d'aparicions de paraules de llargada n. 
+
+
+```python
+# Generem el diccionari d'aparicions dels caràcters. 
+histogram, length = Utils.getCharactersDict("txt/words.txt")
+L = len(histogram.keys())
+print("L=" + str(L))
+```
+
+```
+L=53
+```
+
+
+
+Veiem que existeixen 53 caràcters per processar, de fet son els caràcters referents a les majúscoles, minúscoles i algun signe així com el signe '-'. 
+
+Sabem que considerant el nombre de símbols que apareixen al llenguatge que estem estudiant, la seva entropia és $H(X)=log_2(L)$ on $L=53$. 
+
+Per tant la seva ràtio absoluta és : 
+
+
+```python
+print("H(X)=" + str(Utils.getAbsoluteRatio(L)))
+```
+
+```
+H(X)=5.7279204545632
+```
+
+
+
+Aquesta ràtio ens pot parlar de quines llargades tenen els mots en el llenguatge anglés, recordem que estem fent aquest procés per què és l'idioma amb el que s'ha codificat el llibre de frankenstain. 
+
+**Anem a calcular la ratio verdadera del llenguatge anglés.**
+
+Generem el diccionari d'aparicions de mots de llargada n. Per fer-ho ens ajudem altre cop del fitxer Utils on hi tenim les funcions que realitzen les tasques de indexació. Un cop fet hem d'extreure els valors de r per cada mot aparegut. 
+
+
+```python
+histograma_mots, max = Utils.getWordsLengthDict("txt/words.txt")
+print(histograma_mots)
+```
+
+```
+{1: 52, 2: 160, 3: 1420, 5: 10230, 4: 5272, 8: 29989, 7: 23869, 9:
+32403, 6: 17706, 11: 26013, 10: 30878, 12: 20462, 14: 9765, 16: 3377,
+15: 5925, 20: 198, 19: 428, 17: 1813, 13: 14939, 18: 842, 21: 82, 22:
+41, 23: 17, 24: 5}
+```
+
+
+
+Vegem les aparicions en forma de gràfic un cop calculats els seus valors de ratio verdadera per tots els nombres d'aparicions, $log_2(n)/N$.
+
+
+```python
+rs = Utils.evalDictionary(histograma_mots, max)
+Utils.plotGraphic(histograma_mots.keys(), rs, "Gràfic de d'entropies linealitzdes", "Word length's", "log_2(n) / N")
+```
+
+![](figures/informe_graphic_apparitions_1.png){#graphic_apparitions }\
+
+
+Veiem que el gràfic presenta linealitat tal i com s'espera en un llenguatge donat la seva ràtio verdadera, en aquest cas tenim més nombres de paraules i la L és més grossa, de moment encara no ens afecta. 
+
+Tot seguit fem els càlculs amb el llibre de frankenstain sense xifrar per poder-lo comparar amb el llibre de frankenstain xifrat. 
+
+
+
+```python
+histograma_mots_fran, max_fran = Utils.getWordsLengthDictSpaceSeparator("txt/frankenstein.txt")
+rsf = Utils.evalDictionary(histograma_mots_fran, max_fran)
+print(rsf)
+Utils.plotGraphic(histograma_mots_fran.keys(), rsf, "Gràfic de d'entropies linealitzdes", "Word length's", "log_2(n) / N")
+```
+
+```
+[1.7801016931630305, 0.9296738357080714, 0.6257251015554559,
+6.867883773633319, 3.3688066944355666, 0.4766018101408211,
+1.5090165755209042, 2.593769351779259, 4.669447025746551,
+2.1141612875239795, 0.7869119579873941, 1.3022493620319517,
+0.19540753499337427, 1.1035486451292154, 12.034455095327186,
+0.27451983892367254, 0.3781616894647664, 0.10526315789473684,
+0.041666666666666664, 0.05555555555555555, 0.0, 0.03333333333333333,
+0.047619047619047616, 0.0, 0.0, 0.0]
+```
+
+![](figures/informe_frankenstain_ratio_1.png){#frankenstain_ratio }\
+
+
+Veiem com ens afecta ara la ràtio d'entropia del llenguatge que hem generat amb l'encriptació. Fem els mateixos passos peró amb el fitxer que s'ha generat codificat-modular.txt que és el resultat de codificar el llibre de frankenstain. En aquest cas hem de fer ús d'una funció que ens separi les paraules per cada línia. 
+
+
+```python
+histograma_mots_fran, max_fran = Utils.getWordsLengthDictSpaceSeparator("txt/codificat-modular.txt")
+rsf = Utils.evalDictionary(histograma_mots_fran, max_fran)
+print(rsf)
+Utils.plotGraphic(histograma_mots_fran.keys(), rsf, "Gràfic de d'entropies linealitzdes", "Word length's", "log_2(n) / N")
+```
+
+```
+[0.1341784600673061, 0.5827612841636713, 0.6846710418651193,
+0.28626519664930855, 0.857899909856354, 1.1116228162178088,
+0.27816785241547504, 7.700439718141093, 0.20681156398071657,
+4.204695468068851, 1.961372512736094, 0.9554820237218405,
+0.2369091282614967, 0.2549752546184465, 0.24442694516538704,
+0.5547952063258241, 0.24892718744915238, 0.1490556031659931,
+0.05583886201296061, 0.0425531914893617, 0.30906628072948567,
+0.7584962500721156, 0.58398693894602, 0.06072476243909466,
+0.11498987714127687, 0.03008201407510694, 0.09503443026584577,
+0.14752082266778457, 0.6345591536762673, 2.608849495763639,
+0.05283208335737188, 0.07731309849006472, 0.09105883363405963,
+0.1389256106542368, 0.3283246553956164, 0.06537920352773423,
+0.14285714285714285, 1.2968932855874435, 0.04365583934229659,
+0.08812185314712614, 0.47568013467894854, 0.0748932975385939,
+0.044594316186372975, 0.15619818783608966, 0.09546534090938666,
+0.005494505494505495, 0.019435808276098917, 0.04528162291524496,
+0.09828344341622573, 0.013793103448275862, 0.06280818322531284,
+0.08983124201144367, 0.250181018598647, 0.04207010960978582,
+0.5581272279440741, 0.14326774427675235, 0.06874949785473432,
+0.13526706392804436, 0.1327940099299602, 0.04550440427180916,
+0.15330249314298167, 0.08472481910804124, 0.3707575852293923,
+0.17182572985454284, 0.23409245898848705, 0.015903617088269605,
+0.22992350014431515, 0.12156497161978734, 0.0879143360935909,
+0.037231473227163504, 0.5817109557093133, 0.1348019820101727,
+0.21658856508600394, 1.538697391499865, 0.09754046613836388,
+0.054032812524584875, 0.16210072038172724, 0.31340080742308835,
+0.017860985345287402, 0.06077583276335486, 0.10783158795568885,
+0.09407887119620552, 0.20510289701316814, 0.08258440966972264, 0.14,
+0.22691183073525345, 0.022970471024944296, 0.020950409866101524,
+0.05704308341271118, 0.17289093706134073, 0.05803750000912857,
+0.3522197059679227, 0.049004743061948325, 0.08719526518429499,
+0.1301651565300747, 0.06461003642740794, 0.04045645250898652,
+0.034263330723528634, 0.004901960784313725, 0.04661654413885754,
+0.08816254620311222, 0.08105475355159816, 0.0630961017988616,
+0.020583928580794237, 0.020062816464824763, 0.04858307520404474,
+0.08958501888531309, 0.021932460328575033, 0.0, 0.0,
+0.04549397994618277, 0.04916915169627188, 0.0, 0.03064070513436886,
+0.0426438584735802, 0.025158134932081844, 0.030381038141704717,
+0.05281392941731565, 0.024960039381435532, 0.05953661781762467,
+0.041666666666666664, 0.01909765253100411, 0.030199346317157844,
+0.021430190244714535, 0.024014583344259943, 0.009108979889202048,
+0.02484384886776641, 0.03255742163007099, 0.06997236684591447,
+0.09901502087324078, 0.0309048491441479, 0.028590343955680147,
+0.009844487582118984, 0.054383312422406065, 0.0, 0.012345679012345678,
+0.03350432243664632, 0.008341907898532402, 0.006711409395973154,
+0.010309278350515464, 0.014598540145985401, 0.02306894510338446,
+0.06694030054276763, 0.04287915017920478, 0.010582010582010581,
+0.008086543371026308, 0.005405405405405406, 0.009490793417491953,
+0.005681818181818182, 0.0, 0.030125735300177786, 0.029384938530501285,
+0.0328895642267996, 0.02330827206942877, 0.027675452949098383,
+0.030084875757244653, 0.0291397201305909, 0.0058823529411764705, 0.0,
+0.008128012824211057, 0.019230769230769232, 0.005025125628140704,
+0.02112676056338028, 0.03408521506927218, 0.0, 0.01498018125733782,
+0.018715699480384027, 0.0, 0.016129032258064516, 0.02355977372260541,
+0.010095302552364053, 0.014072291484165831, 0.020052535157554317,
+0.017118956958418252, 0.014603321351492844, 0.006097560975609756,
+0.006535947712418301, 0.01527584272952212, 0.034300494793311744,
+0.02003846899783842, 0.017199467369536016, 0.005714285714285714, 0.0,
+0.006756756756756757, 0.0, 0.0, 0.0, 0.0075474404796245535, 0.0,
+0.013987518643899773, 0.0, 0.005917159763313609, 0.0, 0.00625, 0.0,
+0.0, 0.004424778761061947, 0.005376344086021506, 0.0, 0.0, 0.0, 0.0,
+0.016704518668254405, 0.0, 0.011083653851196897, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+```
+
+![](figures/informe_frankenstain_ratio_xifrat_1.png){#frankenstain_ratio_xifrat }\
+
+
+Veiem que la ratio d'entropies verdaderes del llenguatge difereix molt, ja podem parlar ara no, d'una funció que tendeixi a la linealitat sinó d'una que tendèix al logaritme invers. 
+
+Per tant podem determinar que el nostre xifrat no dóna indicis clars de que el text estigui escrit amb el mateix idioma que l'anglés. Aquest fet es pot denotar ja que els nostres espais formen part del llenguatge de codificació com a caràcters. 
+
+## Redundància del llenguatge resultant
+
+Podem parlar de la redundància d'un llenguatge com la distribució dels parells, tripletes i les paraules del mateix dins del text. 
+
+
+
+
+
+
+
+
+
+
 
 
 

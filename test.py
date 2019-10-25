@@ -1,16 +1,8 @@
-from itertools import permutations
+import Utils
 
-histograma = dict()
-book = ""
-with open("txt/codificat-modular.txt", 'r', encoding='utf-8') as fileobj:
-    for line in fileobj:  
-        for ch in line: 
-            if ch >= chr(32) and ch <= chr(126): 
-                if ch in histograma:
-                    histograma[ch] += 1
-                else: 
-                    histograma[ch] = 1
-length = len(histograma.keys())
-print(length)
-print(list(permutations(histograma.keys(), length)))
+# Generem el diccionari d'aparicions dels caràcters. 
+#histogram, length = Utils.getCharactersDict("txt/words.txt")
+#print(len(histogram.values()))
 
+histograma_mots = Utils.getWordsLengthDictSpaceSeparator("txt/codificat-modular.txt")
+print(histograma_mots)

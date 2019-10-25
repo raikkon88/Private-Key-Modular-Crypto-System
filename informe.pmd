@@ -322,12 +322,11 @@ Ens basem en el resultat obtingut al codificar el llibre frankenstain vist en el
 
 ## Aǹalisi a fer 
 
-- Tipus d'algoritme
-- Taula de freqüències i càlcul de l'IC
-- Càlcul de la incertesa del llenguatge
-- Càlcul de l'entropia del llenguatge
-- Ràtio absoluta del llenguatge
-- Ràtio verdadera del llenguatge
+- Tipus d'algoritme.
+- Taula de freqüències i càlcul de l'IC.
+- Ràtio absoluta del llenguatge.
+- Ràtio verdadera del llenguatge.
+- Càlcul de la redundància del llenguatge.
 
 ## Tipus d'algoritme
 
@@ -418,14 +417,101 @@ $IC=\frac{\sum_{i=1}^{L}f(x_i)(f(x_i)-1)}{N(N-1)}$
 En el nostre cas el calculem de la següent manera : 
 
 ```{python ic_calculation}
-L=95
-suma = 0
-for value in histograma.values():
-    suma += value * (value-1)
+import Utils
+ic = Utils.ic_calculation("txt/codificat-modular.txt", 32, 126)
+```
+Podem veure com el nostre IC s'acosta molt a 1, de fet és inferior a 1, aixó ens indica que és un xifrat polimòrfic. 
 
-itertools.combinations()
+## Càlcul de l'Entropia i de les ratios.
+
+Es vol calcular l'entropia del llenguatge anglés i comparar-lo després amb el fitxer que s'ha codificat. Per fer-ho el primer que hem de fer és aconseguir una relació de paraules en anglés. Per fer-ho (en màquines unix) podem consultar directament el fitxer /usr/share/dict/words. On hi ha totes les paraules escrites en anglés. La idea és comparar les ratios, del llenguatge en anglés, i del text xifrat per veure o per intentar deduïr amb quin idioma està escrit el text xifrat. 
+
+Volquem el fitxer en un fitxer de text dins d'aquest directori. 
 
 ```
+cat /usr/share/dict/words > ~/Projects/seguretat/seguretat-p3/txt/words.txt
+```
+
+Hem de cercar el nombre de caràcters de l'alfabet. Considerant que estan tots els mots en minúscoles, fem ús del fitxer que acabem de generar amb tots els mots de l'alfabet anglés. Tot seguit contem el nombre de caràcters que apareix en aquest fitxer i generm el diccionai d'aparicions de paraules de llargada n. 
+
+```{python counter_letters_and_words}
+# Generem el diccionari d'aparicions dels caràcters. 
+histogram, length = Utils.getCharactersDict("txt/words.txt")
+L = len(histogram.keys())
+print("L=" + str(L))
+```
+
+Veiem que existeixen 53 caràcters per processar, de fet son els caràcters referents a les majúscoles, minúscoles i algun signe així com el signe '-'. 
+
+Sabem que considerant el nombre de símbols que apareixen al llenguatge que estem estudiant, la seva entropia és $H(X)=log_2(L)$ on $L=53$. 
+
+Per tant la seva ràtio absoluta és : 
+
+```{python absolute_ratio}
+print("H(X)=" + str(Utils.getAbsoluteRatio(L)))
+```
+
+Aquesta ràtio ens pot parlar de quines llargades tenen els mots en el llenguatge anglés, recordem que estem fent aquest procés per què és l'idioma amb el que s'ha codificat el llibre de frankenstain. 
+
+**Anem a calcular la ratio verdadera del llenguatge anglés.**
+
+Generem el diccionari d'aparicions de mots de llargada n. Per fer-ho ens ajudem altre cop del fitxer Utils on hi tenim les funcions que realitzen les tasques de indexació. Un cop fet hem d'extreure els valors de r per cada mot aparegut. 
+
+```{python words_counter}
+histograma_mots, max = Utils.getWordsLengthDict("txt/words.txt")
+print(histograma_mots)
+```
+
+Vegem les aparicions en forma de gràfic un cop calculats els seus valors de ratio verdadera per tots els nombres d'aparicions, $log_2(n)/N$.
+
+```{python graphic_apparitions}
+rs = Utils.evalDictionary(histograma_mots, max)
+Utils.plotGraphic(histograma_mots.keys(), rs, "Gràfic de d'entropies linealitzdes", "Word length's", "log_2(n) / N")
+```
+
+Veiem que el gràfic presenta linealitat tal i com s'espera en un llenguatge donat la seva ràtio verdadera, en aquest cas tenim més nombres de paraules i la L és més grossa, de moment encara no ens afecta. 
+
+Tot seguit fem els càlculs amb el llibre de frankenstain sense xifrar per poder-lo comparar amb el llibre de frankenstain xifrat. 
+
+
+```{python frankenstain_ratio}
+histograma_mots_fran, max_fran = Utils.getWordsLengthDictSpaceSeparator("txt/frankenstein.txt")
+rsf = Utils.evalDictionary(histograma_mots_fran, max_fran)
+print(rsf)
+Utils.plotGraphic(histograma_mots_fran.keys(), rsf, "Gràfic de d'entropies linealitzdes", "Word length's", "log_2(n) / N")
+```
+
+Amb aquestes dades veiem com ens afecta ara la ràtio d'entropia del llenguatge que hem generat amb l'encriptació. Fem els mateixos passos peró amb el fitxer que s'ha generat codificat-modular.txt que és el resultat de codificar el llibre de frankenstain. En aquest cas hem de fer ús d'una funció que ens separi les paraules per cada línia. Aquest gràfic comença a fer podor de logaritme. I és que tenim moltes dades atípiques, no estem contant els signes de puntuació que al cap i a la fi ens treuran la linealitat del gràfic.
+
+```{python frankenstain_ratio_xifrat}
+histograma_mots_fran, max_fran = Utils.getWordsLengthDictSpaceSeparator("txt/codificat-modular.txt")
+rsf = Utils.evalDictionary(histograma_mots_fran, max_fran)
+print(rsf)
+Utils.plotGraphic(histograma_mots_fran.keys(), rsf, "Gràfic de d'entropies linealitzdes", "Word length's", "log_2(n) / N")
+```
+
+Veiem que la ratio d'entropies verdaderes del llenguatge difereix molt, ja podem parlar ara no, d'una funció que tendeixi a la linealitat sinó d'una que tendèix al logaritme invers. 
+
+Per tant podem determinar que el nostre xifrat no dóna indicis clars de que el text estigui escrit amb el mateix idioma que l'anglés. Aquest fet es pot denotar ja que els nostres espais formen part del llenguatge de codificació dels caràcters i qualsevol lletra o número pot convertir-se en espai o en signe de puntuació i viceversa. 
+
+## Redundància del llenguatge resultant
+
+Podem parlar de la redundància d'un llenguatge com la distribució dels parells, tripletes i les paraules del mateix dins del text. De fet tal com es cita a les transparències és la diferència entre la ratio absoluta i la ràtio verdadera. 
+
+$D=R-r$
+
+En el nostre cas la redundància s'esquiva, a l'hora de la transformació seguim sense contar que existeixi redundància en els caràcters ja que pot ser totalment variable. Els caràcters no tenen motiu per asimilar-se directament a altres caràcters, de la mateixa manera que les paraules no tenen per què semblar-se entre elles, son totalment aleatòries. 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
