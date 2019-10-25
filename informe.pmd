@@ -316,7 +316,28 @@ python3 decode.py text-codificat.txt text-descodificat.txt lamevaparauladepas
 - L'aritmètica modular també s'utilitza per desxifrar. 
 - Hi ha un tractament especial de l'últim caràcter, el text xifrat sempre tindrà n + 1 caràcters sent n el nombre de caràcters del text desxifrat. 
 
-# Càlcul de l'IC. 
+# Pràctica 5 - Treball sobre l'algoritme.
+
+Ens basem en el resultat obtingut al codificar el llibre frankenstain vist en els apartats anteriors. 
+
+## Aǹalisi a fer 
+
+- Tipus d'algoritme
+- Taula de freqüències i càlcul de l'IC
+- Càlcul de la incertesa del llenguatge
+- Càlcul de l'entropia del llenguatge
+- Ràtio absoluta del llenguatge
+- Ràtio verdadera del llenguatge
+
+## Tipus d'algoritme
+
+És un algoritme de clau secreta. S'utiltiza la clau per construïr l'estructura de dades que permet realitzar el xifrat. En aquest algoritme la fortalesa rau en el desconeixement de la clau. 
+
+
+
+## Taula de freqüències i Càlcul de l'IC. 
+
+### Taula de freqüències.
 
 Realitzem el càlcul de l'IC del resultat de l'encriptació. Primerament mirem l'histograma d'aparicions de l'algoritme final, en aquest cas utiltizem el fitxer txt/codificat-modular.txt per veure fins a quin punt l'histograma de caràcters ens és prou bo per poder distingir o no si l'IC serà l'esperat, en general de la mateixa manera que el resultat de l'histograma de caràcters en el text codificat-auri.txt ha sigut bo per nosaltres, s'espera que utilitzant l'algoritme nou aquest també ho sigui. 
 
@@ -339,7 +360,6 @@ axes.set_ylim([0,5000])
 plt.xlabel("")
 plt.ylabel("")
 plt.show()
-
 ```
 
 ```{python graphic_IC_modular_2}
@@ -365,6 +385,49 @@ plt.show()
 ```
 
 Com podem observar els caràcters es mouen entre les 4400 i les 4800 aparicions! **l'histograma, igual que hem vist en l'apartat de l'auric és molt prometedor per el càlcul de l'IC!**
+
+### Càlcul de l'IC
+
+En el cas d'aquest algoritme s'utilitzen els caràcters només des del nº 32 en codi ascii fins el 127 en codi ascii. Per tant el nombre de caràcters de l'alfabet l'establim com 127 - 32, és a dir **L = 95**. Primer de tot generem l'histograma sencer per tots els caràcters.
+
+```{python histrograma}
+histograma = dict()
+book = ""
+with open("txt/codificat-modular.txt", 'r', encoding='utf-8') as fileobj:
+    for line in fileobj:  
+        for ch in line: 
+            if ch >= chr(32) and ch <= chr(126): 
+                if ch in histograma:
+                    histograma[ch] += 1
+                else: 
+                    histograma[ch] = 1
+
+print(histograma)
+```
+
+Definim : 
+
+- $L$ : Com el nombre de caràcters diferents del llenguatge, on $L=25$. 
+- $n$ : Com el nombre de parells de lletres iguals, on $n=\sum_{i=1}^{L}f(x_i)(f(x_i)-1)$.
+- $c$ : Com el nombre de parells de lletres possibles, on $c=N(N-1)$. 
+
+Establim el càclul de l'IC com : 
+
+$IC=\frac{\sum_{i=1}^{L}f(x_i)(f(x_i)-1)}{N(N-1)}$
+
+En el nostre cas el calculem de la següent manera : 
+
+```{python ic_calculation}
+L=95
+suma = 0
+for value in histograma.values():
+    suma += value * (value-1)
+
+itertools.combinations()
+
+```
+
+
 
 # Referències
 
