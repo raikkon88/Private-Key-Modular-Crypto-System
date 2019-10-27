@@ -502,17 +502,31 @@ $D=R-r$
 
 En el nostre cas la redundància s'esquiva, a l'hora de la transformació seguim sense contar que existeixi redundància en els caràcters ja que pot ser totalment variable. Els caràcters no tenen motiu per asimilar-se directament a altres caràcters, de la mateixa manera que les paraules no tenen per què semblar-se entre elles, son totalment aleatòries. 
 
+## Análisi dels caràcters en funció del següent
 
+Com ja hem vist, l'algoritme es basa en codificar un caràcter en funció de l'anterior, és a dir en funció de on vam deixar en la taula l'anterior caràcter podem assegurar on anirà el següent sempre que es conegui quina és la representació de la taula de caràcters, la mida de la mateixa, i sobretot, el més important, sempre que es conegui de quins nombres està formada la taula.
 
+S'ha fet processos iteratius per jugar a descodificar mitjançant les restes dels caràcters aviam si n'hi havia algun que es pogués utilitzar com a caràcter bo peró com que l'algoritme es centra en la modularitat no podem saber on corresponen els diferents caràcters.
 
+**Deduim doncs que finalment la força de l'algoritme recau en la clau.**
 
+## Complexitats
 
+### Complexitat de la codificació. 
 
+El cost de l'encriptació és de O(n) on n es correspon a la llargada del text. 
 
+### Complexitat de la descodificació
 
+El cost de la descodificació és O(n) on n es correspon a la llargada del text. 
 
+### Complexitat de descodificació força bruta. 
 
+El més òptim seria llençar un algoritme que pogués generar una taula per cada possible mòdul de 0 a 94 en aquest cas. Per cada taula generada s'hauria de llençar l'algoritme a cada una de les posicions possibles d'inici de la taula. 
 
+Per tant l'algoritme de descodificació per força bruta acaba sent de O(n^2) el que representa una broma de mal gust per el creador de l'algoritme. La única manera de fer que l'algoritme fos escalable a descodificació per força bruta exponencial podria ser en la generació de la taula. A l'hora de generar la taula s'hauria d'aplicar difrents iteracions desordenant les columnes de la taula, aquestes iteracions s'haurien de poder generar amb la clau. 
+
+**L'actual algoritme és molt fluix conta la força bruta, es podria descodificar amb complexitat O(n^2)**  
 
 
 # Referències
