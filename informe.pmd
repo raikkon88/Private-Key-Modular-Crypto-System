@@ -526,7 +526,7 @@ El més òptim seria llençar un algoritme que pogués generar una taula per cad
 
 Per tant l'algoritme de descodificació per força bruta acaba sent de O(n^2) el que representa una broma de mal gust per el creador de l'algoritme. La única manera de fer que l'algoritme fos escalable a descodificació per força bruta exponencial podria ser en la generació de la taula. A l'hora de generar la taula s'hauria d'aplicar difrents iteracions desordenant les columnes de la taula, aquestes iteracions s'haurien de poder generar amb la clau. 
 
-**L'actual algoritme és molt fluix conta la força bruta, es podria descodificar amb complexitat O(n^2)**  
+**L'actual algoritme és molt fluix conta la força bruta, es podria descodificar amb complexitat O(n^2), per millorar-ho s'haurien de desordenar les columnes de la taula.**  
 
 
 # Referències
